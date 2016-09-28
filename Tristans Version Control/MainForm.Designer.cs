@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.CurrentTextBox = new System.Windows.Forms.TextBox();
             this.CurrentLabel = new System.Windows.Forms.Label();
             this.CurrentButton = new System.Windows.Forms.Button();
@@ -165,6 +166,7 @@
             this.Controls.Add(this.CurrentLabel);
             this.Controls.Add(this.CurrentTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainForm";

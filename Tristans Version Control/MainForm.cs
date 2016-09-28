@@ -26,7 +26,7 @@ namespace Tristans_Version_Control
             //initialize tray icon image
             trayIcon = new NotifyIcon();
             trayIcon.Text = "Tristan's Version Control";
-            trayIcon.Icon = new Icon(SystemIcons.Application, 40, 40);
+            trayIcon.Icon = Icon;
 
             trayIcon.ContextMenu = trayMenu;
             trayIcon.Visible = true;
