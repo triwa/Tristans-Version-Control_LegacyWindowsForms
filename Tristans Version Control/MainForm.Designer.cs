@@ -55,6 +55,7 @@
             // CurrentLabel
             // 
             this.CurrentLabel.AutoSize = true;
+            this.CurrentLabel.BackColor = System.Drawing.Color.Transparent;
             this.CurrentLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CurrentLabel.Location = new System.Drawing.Point(12, 9);
             this.CurrentLabel.Name = "CurrentLabel";
@@ -64,6 +65,7 @@
             // 
             // CurrentButton
             // 
+            this.CurrentButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.CurrentButton.Location = new System.Drawing.Point(126, 6);
             this.CurrentButton.Name = "CurrentButton";
             this.CurrentButton.Size = new System.Drawing.Size(75, 23);
@@ -74,6 +76,7 @@
             // 
             // SaveButton
             // 
+            this.SaveButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.SaveButton.Location = new System.Drawing.Point(146, 61);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(75, 23);
@@ -85,6 +88,7 @@
             // SaveLabel
             // 
             this.SaveLabel.AutoSize = true;
+            this.SaveLabel.BackColor = System.Drawing.Color.Transparent;
             this.SaveLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SaveLabel.Location = new System.Drawing.Point(12, 64);
             this.SaveLabel.Name = "SaveLabel";
@@ -110,6 +114,7 @@
             // TimeLabel
             // 
             this.TimeLabel.AutoSize = true;
+            this.TimeLabel.BackColor = System.Drawing.Color.Transparent;
             this.TimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TimeLabel.Location = new System.Drawing.Point(12, 119);
             this.TimeLabel.Name = "TimeLabel";
@@ -120,6 +125,7 @@
             // TimeMinutesLabel
             // 
             this.TimeMinutesLabel.AutoSize = true;
+            this.TimeMinutesLabel.BackColor = System.Drawing.Color.Transparent;
             this.TimeMinutesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TimeMinutesLabel.Location = new System.Drawing.Point(64, 146);
             this.TimeMinutesLabel.Name = "TimeMinutesLabel";
@@ -129,7 +135,11 @@
             // 
             // FinishButton
             // 
-            this.FinishButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FinishButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("FinishButton.BackgroundImage")));
+            this.FinishButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.FinishButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.FinishButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FinishButton.ForeColor = System.Drawing.SystemColors.Control;
             this.FinishButton.Location = new System.Drawing.Point(175, 119);
             this.FinishButton.Name = "FinishButton";
             this.FinishButton.Size = new System.Drawing.Size(293, 43);
@@ -154,6 +164,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(481, 177);
             this.Controls.Add(this.FinishButton);
             this.Controls.Add(this.TimeMinutesLabel);
