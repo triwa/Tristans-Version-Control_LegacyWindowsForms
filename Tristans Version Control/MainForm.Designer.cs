@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.CurrentTextBox = new System.Windows.Forms.TextBox();
             this.CurrentLabel = new System.Windows.Forms.Label();
@@ -40,9 +39,9 @@
             this.TimeLabel = new System.Windows.Forms.Label();
             this.TimeMinutesLabel = new System.Windows.Forms.Label();
             this.FinishButton = new System.Windows.Forms.Button();
-            this.Timer = new System.Windows.Forms.Timer(this.components);
             this.CurrentBrowser = new System.Windows.Forms.OpenFileDialog();
             this.SaveBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.ClearButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // CurrentTextBox
@@ -140,17 +139,13 @@
             this.FinishButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.FinishButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FinishButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.FinishButton.Location = new System.Drawing.Point(175, 119);
+            this.FinishButton.Location = new System.Drawing.Point(322, 119);
             this.FinishButton.Name = "FinishButton";
-            this.FinishButton.Size = new System.Drawing.Size(293, 43);
+            this.FinishButton.Size = new System.Drawing.Size(146, 43);
             this.FinishButton.TabIndex = 9;
             this.FinishButton.Text = "Finish";
             this.FinishButton.UseVisualStyleBackColor = true;
             this.FinishButton.Click += new System.EventHandler(this.FinishButton_Click);
-            // 
-            // Timer
-            // 
-            this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
             // 
             // CurrentBrowser
             // 
@@ -160,6 +155,20 @@
             // 
             this.SaveBrowser.Description = "Choose where to make new versions:";
             // 
+            // ClearButton
+            // 
+            this.ClearButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.ClearButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ClearButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ClearButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.ClearButton.Location = new System.Drawing.Point(170, 119);
+            this.ClearButton.Name = "ClearButton";
+            this.ClearButton.Size = new System.Drawing.Size(146, 43);
+            this.ClearButton.TabIndex = 10;
+            this.ClearButton.Text = "Clear";
+            this.ClearButton.UseVisualStyleBackColor = true;
+            this.ClearButton.Click += new System.EventHandler(this.ClearButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -167,6 +176,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(481, 177);
+            this.Controls.Add(this.ClearButton);
             this.Controls.Add(this.FinishButton);
             this.Controls.Add(this.TimeMinutesLabel);
             this.Controls.Add(this.TimeLabel);
@@ -202,9 +212,9 @@
         private System.Windows.Forms.Label TimeLabel;
         private System.Windows.Forms.Label TimeMinutesLabel;
         private System.Windows.Forms.Button FinishButton;
-        private System.Windows.Forms.Timer Timer;
         private System.Windows.Forms.OpenFileDialog CurrentBrowser;
         private System.Windows.Forms.FolderBrowserDialog SaveBrowser;
+        private System.Windows.Forms.Button ClearButton;
     }
 }
 

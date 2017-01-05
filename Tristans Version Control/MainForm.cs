@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Drawing;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
@@ -13,6 +13,7 @@ namespace Tristans_Version_Control
         private string savePath;
         private string filename;
         private string extension;
+        private System.Timers.Timer timer, appMonitorTimer;
 
         public MainForm()
         {
@@ -30,6 +31,20 @@ namespace Tristans_Version_Control
 
             trayIcon.ContextMenu = trayMenu;
             trayIcon.Visible = true;
+
+            //start application minimized
+            WindowState = FormWindowState.Minimized;
+
+            //instantiate timers and start the app monitor timer to see if adobe animate is open
+            timer = new System.Timers.Timer();
+            appMonitorTimer = new System.Timers.Timer();
+
+            appMonitorTimer.Elapsed += AppMonitorTimer_Tick;
+            timer.Elapsed += Timer_Tick;
+
+            appMonitorTimer.Interval = 10000;
+            appMonitorTimer.Start();
+            
         }
 
         //close application when exit button in tray menu is pressed
@@ -41,8 +56,9 @@ namespace Tristans_Version_Control
         //show settings window when settings button in tray menu is pressed
         private void OpenSettings(object sender, EventArgs e)
         {
-            Visible = true;
-            ShowInTaskbar = true;
+            Invoke(new Action(() => { WindowState = FormWindowState.Normal; }));
+            Invoke(new Action(() => { ShowInTaskbar = true; }));
+            Invoke(new Action(() => { Visible = true; }));
         }
 
         //browse button to select the file to backup
@@ -64,14 +80,28 @@ namespace Tristans_Version_Control
             SaveTextBox.Text = SaveBrowser.SelectedPath;
         }
 
+        private void ClearButton_Click(object sender, EventArgs e)
+        {
+            timer.Stop();
+            SaveTextBox.Text = "";
+            CurrentTextBox.Text = "";
+        }
+
         //hide settings window when finish button is pressed
         private void FinishButton_Click(object sender, EventArgs e)
         {
-            Visible = false;
-            ShowInTaskbar = false;
-            //add "\" to the end of the save path text box to make sure it saves into the new folder created instead of going into the root directory.
-            SaveTextBox.Text = SaveTextBox.Text + "\\";
-            VersionControlFunction();
+            Invoke(new Action(() => { ShowInTaskbar = false; }));
+
+            if (CurrentTextBox.Text != "" || SaveTextBox.Text != "")
+            {
+                //add "\" to the end of the save path text box to make sure it saves into the new folder created instead of going into the root directory.
+                SaveTextBox.Text = SaveTextBox.Text + "\\";
+
+                VersionControlFunction();
+            }
+
+            Invoke(new Action(() => { WindowState = FormWindowState.Minimized; }));
+            Invoke(new Action(() => { Visible = false; }));
         }
 
         //save settings to local variables and set up the timer
@@ -105,8 +135,8 @@ namespace Tristans_Version_Control
             File.Copy(currentPath, savePath);
 
             //start timer
-            Timer.Interval = timerInterval;
-            Timer.Start();
+            timer.Interval = timerInterval;
+            timer.Start();
         }
 
         //make a backup every time the timer reaches the set interval
@@ -120,7 +150,40 @@ namespace Tristans_Version_Control
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             trayIcon.Visible = false;
-            Timer.Stop();
+            timer.Stop();
+        }
+
+        //checks current process list for adobe animate
+        //if animate is open, show a popup message to launch this application
+        private void AppMonitorTimer_Tick(object sender, EventArgs e)
+        {
+            Process[] animate = Process.GetProcessesByName("Animate");
+
+            //if there is a process called animate, show popup
+            if (animate.Length == 1)
+            {
+                appMonitorTimer.Stop();
+
+                DialogResult result = MessageBox.Show("Wew lad, I see animate is open. You wanna start backing up your shit?",
+                                                      "WEW",
+                                                      MessageBoxButtons.YesNo,
+                                                      MessageBoxIcon.Question,
+                                                      MessageBoxDefaultButton.Button1,
+                                                      MessageBoxOptions.ServiceNotification);
+                if (result == DialogResult.Yes)
+                {
+                    OpenSettings(null, null);
+                }
+
+                animate[0].EnableRaisingEvents = true;
+                animate[0].Exited += new EventHandler(AnimateClosed);
+            }
+        }
+
+        //if animate is closed, start the AppMonitor timer again
+        private void AnimateClosed(object sender, EventArgs e)
+        {
+            appMonitorTimer.Start();
         }
     }
 }
