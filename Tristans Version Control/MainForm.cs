@@ -9,11 +9,19 @@ namespace Tristans_Version_Control
     {
         private NotifyIcon trayIcon;
         private ContextMenu trayMenu;
-        private string currentPath;
-        private string savePath;
-        private string filename;
-        private string extension;
-        private System.Timers.Timer timer, appMonitorTimer;
+
+        private TextBox[] currentTextBoxArray;
+        private TextBox[] saveTextBoxArray;
+
+        //fileArray Structure:
+        //          0           1           2               3
+        //    ___________________________________________________
+        //  0|  filename    extension   currentPath     SavePath
+        //  ...
+        private string[,] fileArray;
+
+        private System.Timers.Timer timer,
+                                    appMonitorTimer;
 
         public MainForm()
         {
@@ -29,8 +37,15 @@ namespace Tristans_Version_Control
             trayIcon.Text = "Tristan's Version Control";
             trayIcon.Icon = Icon;
 
+            //match the tray menu to the tray icon
             trayIcon.ContextMenu = trayMenu;
             trayIcon.Visible = true;
+
+            //initialize file array
+            fileArray = new string[4,4];
+
+            //group textboxes and browsers into arrays for looping functions
+            groupTextBoxesAndBrowsers();
 
             //start application minimized
             WindowState = FormWindowState.Minimized;
@@ -44,7 +59,22 @@ namespace Tristans_Version_Control
 
             appMonitorTimer.Interval = 10000;
             appMonitorTimer.Start();
-            
+        }
+
+        private void groupTextBoxesAndBrowsers()
+        {
+            currentTextBoxArray = new TextBox[4];
+            saveTextBoxArray = new TextBox[4];
+
+            currentTextBoxArray[0] = CurrentTextBox;
+            currentTextBoxArray[1] = CurrentTextBox1;
+            currentTextBoxArray[2] = CurrentTextBox2;
+            currentTextBoxArray[3] = CurrentTextBox3;
+
+            saveTextBoxArray[0] = SaveTextBox;
+            saveTextBoxArray[1] = SaveTextBox1;
+            saveTextBoxArray[2] = SaveTextBox2;
+            saveTextBoxArray[3] = SaveTextBox3;
         }
 
         //close application when exit button in tray menu is pressed
@@ -68,23 +98,130 @@ namespace Tristans_Version_Control
             CurrentTextBox.Text = CurrentBrowser.FileName;
 
             //set save path to same as selected file and create a new folder "\Version History" there for the backups to save in.
-            string pathOfCurrent = Path.GetDirectoryName(CurrentBrowser.FileName);
-            SaveTextBox.Text = "" + pathOfCurrent + "\\Version History\\";
-            SaveBrowser.SelectedPath = pathOfCurrent;
+            try
+            {
+                string pathOfCurrent = Path.GetDirectoryName(CurrentBrowser.FileName);
+                SaveTextBox.Text = pathOfCurrent + "\\" + Path.GetFileNameWithoutExtension(CurrentTextBox.Text) + " Version History\\";
+                SaveBrowser.SelectedPath = pathOfCurrent;
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void CurrentButton1_Click(object sender, EventArgs e)
+        {
+            CurrentBrowser1.ShowDialog();
+            CurrentTextBox1.Text = CurrentBrowser1.FileName;
+
+            try
+            {
+                //set save path to same as selected file and create a new folder "\Version History" there for the backups to save in.
+                string pathOfCurrent = Path.GetDirectoryName(CurrentBrowser1.FileName);
+                SaveTextBox1.Text = pathOfCurrent + "\\" + Path.GetFileNameWithoutExtension(CurrentTextBox1.Text) + " Version History\\";
+                SaveBrowser1.SelectedPath = pathOfCurrent;
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void CurrentButton2_Click(object sender, EventArgs e)
+        {
+            CurrentBrowser2.ShowDialog();
+            CurrentTextBox2.Text = CurrentBrowser2.FileName;
+
+            try
+            {
+                //set save path to same as selected file and create a new folder "\Version History" there for the backups to save in.
+                string pathOfCurrent = Path.GetDirectoryName(CurrentBrowser2.FileName);
+                SaveTextBox2.Text = pathOfCurrent + "\\" + Path.GetFileNameWithoutExtension(CurrentTextBox2.Text) + " Version History\\";
+                SaveBrowser2.SelectedPath = pathOfCurrent;
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void CurrentButton3_Click(object sender, EventArgs e)
+        {
+            CurrentBrowser3.ShowDialog();
+            CurrentTextBox3.Text = CurrentBrowser3.FileName;
+
+            try
+            {
+                //set save path to same as selected file and create a new folder "\Version History" there for the backups to save in.
+                string pathOfCurrent = Path.GetDirectoryName(CurrentBrowser3.FileName);
+                SaveTextBox3.Text = pathOfCurrent + "\\" + Path.GetFileNameWithoutExtension(CurrentTextBox3.Text) + " Version History\\";
+                SaveBrowser3.SelectedPath = pathOfCurrent;
+            }
+            catch (Exception)
+            {
+            }
         }
 
         //browse button to select the folder to save backups in
         private void SaveButton_Click(object sender, EventArgs e)
         {
             SaveBrowser.ShowDialog();
-            SaveTextBox.Text = SaveBrowser.SelectedPath;
+
+            try
+            {
+                SaveTextBox.Text = SaveBrowser.SelectedPath + "\\";
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void SaveButton1_Click(object sender, EventArgs e)
+        {
+            SaveBrowser1.ShowDialog();
+
+            try
+            {
+                SaveTextBox1.Text = SaveBrowser1.SelectedPath + "\\";
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void SaveButton2_Click(object sender, EventArgs e)
+        {
+            SaveBrowser2.ShowDialog();
+
+            try
+            {
+                SaveTextBox2.Text = SaveBrowser2.SelectedPath + "\\";
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void SaveButton3_Click(object sender, EventArgs e)
+        {
+            SaveBrowser3.ShowDialog();
+
+            try
+            {
+                SaveTextBox3.Text = SaveBrowser3.SelectedPath + "\\";
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private void ClearButton_Click(object sender, EventArgs e)
         {
             timer.Stop();
-            SaveTextBox.Text = "";
-            CurrentTextBox.Text = "";
+
+            for (int i = 0; i < 4; i++)
+            {
+                saveTextBoxArray[i].Text = "";
+                currentTextBoxArray[i].Text = "";
+            }
         }
 
         //hide settings window when finish button is pressed
@@ -92,11 +229,20 @@ namespace Tristans_Version_Control
         {
             Invoke(new Action(() => { ShowInTaskbar = false; }));
 
-            if (CurrentTextBox.Text != "" || SaveTextBox.Text != "")
+            for (int i = 0; i < 4; i++)
             {
-                //add "\" to the end of the save path text box to make sure it saves into the new folder created instead of going into the root directory.
-                SaveTextBox.Text = SaveTextBox.Text + "\\";
+                if (currentTextBoxArray[i].Text != "" || saveTextBoxArray[i].Text != "")
+                {
+                    //add "\" to the end of the save path text box to make sure it saves into the new folder created instead of going into the root directory.
+                    saveTextBoxArray[i].Text = saveTextBoxArray[i].Text;
+                }
+            }
 
+            if (CurrentTextBox.Text != "" || SaveTextBox.Text != "" ||
+                CurrentTextBox1.Text != "" || SaveTextBox1.Text != "" ||
+                CurrentTextBox2.Text != "" || SaveTextBox2.Text != "" ||
+                CurrentTextBox3.Text != "" || SaveTextBox3.Text != "")
+            {
                 VersionControlFunction();
             }
 
@@ -107,11 +253,18 @@ namespace Tristans_Version_Control
         //save settings to local variables and set up the timer
         private void VersionControlFunction()
         {
-            currentPath = CurrentTextBox.Text;
-            savePath = SaveTextBox.Text;
-            filename = Path.GetFileName(CurrentBrowser.FileName);
-            filename = filename.Substring(0, filename.Length - 3);
-            extension = Path.GetExtension(CurrentBrowser.FileName);
+            //fileArray Structure:
+            //          0           1           2               3
+            //    ___________________________________________________
+            //  0|  filename    extension   currentPath     SavePath
+            //  ...
+            for (int i = 0; i < 4; i++)
+            {
+                fileArray[i, 0] = Path.GetFileNameWithoutExtension(currentTextBoxArray[i].Text);
+                fileArray[i, 1] = Path.GetExtension(currentTextBoxArray[i].Text);
+                fileArray[i, 2] = currentTextBoxArray[i].Text;
+                fileArray[i, 3] = saveTextBoxArray[i].Text;
+            }
 
             //set timer to default 30 minutes
             int timerInterval = 1800000;
@@ -128,11 +281,17 @@ namespace Tristans_Version_Control
             }
 
             //creates new folder if needed
-            Directory.CreateDirectory(savePath);
+            for (int i = 0; i < 4; i++)
+            {
+                if (fileArray[i,3] != "")
+                {
+                    Directory.CreateDirectory(fileArray[i,3]);
 
-            //instantly saves a backup to the selected folder in savepath
-            savePath = SaveTextBox.Text + filename + DateTime.Now.ToString().Replace(":", ".").Replace("/","-") + extension;
-            File.Copy(currentPath, savePath);
+                    //instantly saves a backup to the selected folder in savepath
+                    string fileCopy = saveTextBoxArray[i].Text + fileArray[i, 0] + " " + DateTime.Now.ToString().Replace(":", ".").Replace("/", "-") + fileArray[i, 1];
+                    File.Copy(fileArray[i,2], fileCopy);
+                }
+            }
 
             //start timer
             timer.Interval = timerInterval;
@@ -142,8 +301,14 @@ namespace Tristans_Version_Control
         //make a backup every time the timer reaches the set interval
         private void Timer_Tick(object sender, EventArgs e)
         {
-            savePath = SaveTextBox.Text + filename + DateTime.Now.ToString().Replace(":",".").Replace("/", "-") + extension;
-            File.Copy(currentPath, savePath);
+            for (int i = 0; i < 4; i++)
+            {
+                if (fileArray[i, 3] != "")
+                {
+                    string fileCopy = saveTextBoxArray[i].Text + fileArray[i, 0] + " " + DateTime.Now.ToString().Replace(":", ".").Replace("/", "-") + fileArray[i, 1];
+                    File.Copy(fileArray[i, 2], fileCopy);
+                }
+            }
         }
 
         //makes sure to get rid of the tray icon and close the timer when application is closed
