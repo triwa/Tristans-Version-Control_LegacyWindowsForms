@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IWshRuntimeLibrary;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Media;
@@ -66,6 +67,14 @@ namespace Tristans_Version_Control
 
             appMonitorTimer.Interval = 10000;
             appMonitorTimer.Start();
+
+            //add program to startup folder if it isn't already
+            string startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            WshShell shell = new WshShell();
+            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(startupFolder + "\\Tristans Version Control.lnk");
+            shortcut.Description = "Tristans Version Control";
+            shortcut.TargetPath = Directory.GetCurrentDirectory() + "\\Tristans Version Control.exe";
+            shortcut.Save();
         }
 
         private void groupTextBoxesAndBrowsers()
@@ -301,7 +310,7 @@ namespace Tristans_Version_Control
 
                     //instantly saves a backup to the selected folder in savepath
                     string fileCopy = saveTextBoxArray[i].Text + fileArray[i, 0] + " " + DateTime.Now.ToString().Replace(":", ".").Replace("/", "-") + fileArray[i, 1];
-                    File.Copy(fileArray[i,2], fileCopy);
+                    System.IO.File.Copy(fileArray[i,2], fileCopy);
                 }
             }
 
@@ -318,7 +327,7 @@ namespace Tristans_Version_Control
                 if (fileArray[i, 3] != "")
                 {
                     string fileCopy = saveTextBoxArray[i].Text + fileArray[i, 0] + " " + DateTime.Now.ToString().Replace(":", ".").Replace("/", "-") + fileArray[i, 1];
-                    File.Copy(fileArray[i, 2], fileCopy);
+                    System.IO.File.Copy(fileArray[i, 2], fileCopy);
                 }
             }
         }
@@ -340,7 +349,7 @@ namespace Tristans_Version_Control
             string saveDirectory = documentsPath + "\\Tristan's Version Control";
             string saveFile = saveDirectory + "\\notifications.tristan";
 
-            if (File.Exists(saveFile))
+            if (System.IO.File.Exists(saveFile))
             {
                 StreamReader reader = new StreamReader(saveFile);
                 notificationProcessesList = reader.ReadToEnd().Split('\n');
@@ -368,7 +377,7 @@ namespace Tristans_Version_Control
                     appMonitorTimer.Elapsed -= AppMonitorTimer_Tick;
                     appMonitorTimer.Elapsed += AppMonitorTimer_Dismissed_Tick;
 
-                    SoundPlayer player = new SoundPlayer(SoundsResource.bigGuy);
+                    SoundPlayer player = new SoundPlayer(Resources.bigGuy);
                     player.Play();
 
                     DialogResult result = MessageBox.Show("Wew lad, I see one of your programs set to have notifications is open. You wanna start backing up your files?",
@@ -381,7 +390,7 @@ namespace Tristans_Version_Control
                     //if yes is selected in the popup, open this program
                     if (result == DialogResult.Yes)
                     {
-                        player.Stream = SoundsResource.forYou;
+                        player.Stream = Resources.forYou;
                         player.Play();
 
                         OpenSettings(null, null);
