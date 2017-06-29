@@ -1,7 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Media;
+using System.Timers;
 using System.Windows.Forms;
+
+//
+// This applications provides a way to incrementally back up files, and show a notification when selected programs are open.
+// The notifications for programs are saved in a flat file in "//Documents/Tristan's Version Control" and are edited through the NotificationsForm.
+//
 
 namespace Tristans_Version_Control
 {
@@ -20,7 +27,7 @@ namespace Tristans_Version_Control
         //  ...
         private string[,] fileArray;
 
-        private System.Timers.Timer timer,
+        private System.Timers.Timer saveTimer,
                                     appMonitorTimer;
 
         public MainForm()
@@ -51,11 +58,11 @@ namespace Tristans_Version_Control
             WindowState = FormWindowState.Minimized;
 
             //instantiate timers and start the app monitor timer to see if adobe animate is open
-            timer = new System.Timers.Timer();
+            saveTimer = new System.Timers.Timer();
             appMonitorTimer = new System.Timers.Timer();
 
             appMonitorTimer.Elapsed += AppMonitorTimer_Tick;
-            timer.Elapsed += Timer_Tick;
+            saveTimer.Elapsed += saveTimer_Tick;
 
             appMonitorTimer.Interval = 10000;
             appMonitorTimer.Start();
@@ -86,9 +93,14 @@ namespace Tristans_Version_Control
         //show settings window when settings button in tray menu is pressed
         private void OpenSettings(object sender, EventArgs e)
         {
-            Invoke(new Action(() => { WindowState = FormWindowState.Normal; }));
-            Invoke(new Action(() => { ShowInTaskbar = true; }));
-            Invoke(new Action(() => { Visible = true; }));
+            Invoke(new Action(() => 
+            {
+                WindowState = FormWindowState.Normal;
+                ShowInTaskbar = true;
+                Visible = true;
+                TopMost = true;
+                TopMost = false;
+            }));
         }
 
         //browse button to select the file to backup
@@ -215,7 +227,7 @@ namespace Tristans_Version_Control
 
         private void ClearButton_Click(object sender, EventArgs e)
         {
-            timer.Stop();
+            saveTimer.Stop();
 
             for (int i = 0; i < 4; i++)
             {
@@ -294,12 +306,12 @@ namespace Tristans_Version_Control
             }
 
             //start timer
-            timer.Interval = timerInterval;
-            timer.Start();
+            saveTimer.Interval = timerInterval;
+            saveTimer.Start();
         }
 
         //make a backup every time the timer reaches the set interval
-        private void Timer_Tick(object sender, EventArgs e)
+        private void saveTimer_Tick(object sender, EventArgs e)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -315,40 +327,92 @@ namespace Tristans_Version_Control
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             trayIcon.Visible = false;
-            timer.Stop();
+            saveTimer.Stop();
         }
 
         //checks current process list for adobe animate
-        //if animate is open, show a popup message to launch this application
+        //if any of the processes with notifications enabled is running, show a popup message to open this application
+        string[] notificationProcessesList;
         private void AppMonitorTimer_Tick(object sender, EventArgs e)
         {
-            Process[] animate = Process.GetProcessesByName("Animate");
+            //get processes that should recieve notifications
+            string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string saveDirectory = documentsPath + "\\Tristan's Version Control";
+            string saveFile = saveDirectory + "\\notifications.tristan";
 
-            //if there is a process called animate, show popup
-            if (animate.Length == 1)
+            if (File.Exists(saveFile))
             {
-                appMonitorTimer.Stop();
+                StreamReader reader = new StreamReader(saveFile);
+                notificationProcessesList = reader.ReadToEnd().Split('\n');
+                reader.Close();
 
-                DialogResult result = MessageBox.Show("Wew lad, I see animate is open. You wanna start backing up your shit?",
-                                                      "WEW",
-                                                      MessageBoxButtons.YesNo,
-                                                      MessageBoxIcon.Question,
-                                                      MessageBoxDefaultButton.Button1,
-                                                      MessageBoxOptions.ServiceNotification);
-                if (result == DialogResult.Yes)
+                Process[] existingProcessesWithNotifications;
+                bool isProcessRunning = false;
+                //if a process with notifications enabled is running, set IsProcessesRunning to true
+                foreach (string element in notificationProcessesList)
                 {
-                    OpenSettings(null, null);
+                    existingProcessesWithNotifications = Process.GetProcessesByName(element);
+
+                    if (existingProcessesWithNotifications.Length >= 1)
+                    {
+                        isProcessRunning = true;
+                    }
                 }
 
-                animate[0].EnableRaisingEvents = true;
-                animate[0].Exited += new EventHandler(AnimateClosed);
+                //if a process with notifications enabled is running, show a popup asking to open this program
+                if (isProcessRunning)
+                {
+                    //changes elapsed event handler to AppMonitorTimer_Dismissed_Tick.
+                    //this checks to see if all the programs have been closed before changing it back to this event handler.
+                    //this is done so the popup doesn't come up every time the app monitor timer goes off.
+                    appMonitorTimer.Elapsed -= AppMonitorTimer_Tick;
+                    appMonitorTimer.Elapsed += AppMonitorTimer_Dismissed_Tick;
+
+                    SoundPlayer player = new SoundPlayer(SoundsResource.bigGuy);
+                    player.Play();
+
+                    DialogResult result = MessageBox.Show("Wew lad, I see one of your programs set to have notifications is open. You wanna start backing up your files?",
+                                                          "WEW",
+                                                          MessageBoxButtons.YesNo,
+                                                          MessageBoxIcon.Question,
+                                                          MessageBoxDefaultButton.Button1,
+                                                          MessageBoxOptions.ServiceNotification);
+
+                    //if yes is selected in the popup, open this program
+                    if (result == DialogResult.Yes)
+                    {
+                        player.Stream = SoundsResource.forYou;
+                        player.Play();
+
+                        OpenSettings(null, null);
+                    }
+                }
             }
         }
 
-        //if animate is closed, start the AppMonitor timer again
-        private void AnimateClosed(object sender, EventArgs e)
+        //this checks to see if all the programs have been closed before changing the app monitor event handler back to AppMonitorTimer_Tick.
+        //this is done so the popup doesn't come up every time the app monitor timer goes off.
+        private void AppMonitorTimer_Dismissed_Tick(object sender, ElapsedEventArgs e)
         {
-            appMonitorTimer.Start();
+            foreach (string element in notificationProcessesList)
+            {
+                Process[] existingProcessesWithNotifications = Process.GetProcessesByName(element);
+
+                if (existingProcessesWithNotifications.Length == 0)
+                {
+                    appMonitorTimer.Elapsed -= AppMonitorTimer_Dismissed_Tick;
+                    appMonitorTimer.Elapsed += AppMonitorTimer_Tick;
+                }
+            }
+        }
+
+
+        //shows the notifications window where a user can select one of the running applications to have notifications for in the future.
+        //a notification comes up when selected programs are detected as being opened
+        private void NotificationsButton_Click(object sender, EventArgs e)
+        {
+            NotificationsForm notificationsForm = new NotificationsForm();
+            notificationsForm.ShowDialog();
         }
     }
 }

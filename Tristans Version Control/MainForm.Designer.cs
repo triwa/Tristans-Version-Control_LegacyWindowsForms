@@ -64,6 +64,8 @@
             this.SaveBrowser1 = new System.Windows.Forms.FolderBrowserDialog();
             this.SaveBrowser2 = new System.Windows.Forms.FolderBrowserDialog();
             this.SaveBrowser3 = new System.Windows.Forms.FolderBrowserDialog();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.NotificationsButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // CurrentTextBox
@@ -371,6 +373,16 @@
             // 
             this.SaveBrowser3.Description = "Choose where to make new versions:";
             // 
+            // NotificationsButton
+            // 
+            this.NotificationsButton.Location = new System.Drawing.Point(16, 159);
+            this.NotificationsButton.Name = "NotificationsButton";
+            this.NotificationsButton.Size = new System.Drawing.Size(123, 46);
+            this.NotificationsButton.TabIndex = 27;
+            this.NotificationsButton.Text = "Notifications";
+            this.NotificationsButton.UseVisualStyleBackColor = true;
+            this.NotificationsButton.Click += new System.EventHandler(this.NotificationsButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -378,6 +390,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1157, 217);
+            this.Controls.Add(this.NotificationsButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.SaveButton3);
             this.Controls.Add(this.SaveTextBox3);
@@ -455,6 +468,8 @@
         private System.Windows.Forms.FolderBrowserDialog SaveBrowser1;
         private System.Windows.Forms.FolderBrowserDialog SaveBrowser2;
         private System.Windows.Forms.FolderBrowserDialog SaveBrowser3;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.Button NotificationsButton;
     }
 }
 
